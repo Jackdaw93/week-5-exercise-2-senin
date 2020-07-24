@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Container,
-  Input,
-  Card,
-  CardBody,
-  Col,
-  Row,
-  CardText,
-} from "reactstrap";
+import { Container, Input, Card, Col, Row } from "reactstrap";
 
 function Giphy() {
   const [gifs, setGifs] = useState([]);
