@@ -1,81 +1,85 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import {
+  Container,
+  Input,
+  Card,
+  CardBody,
+  Col,
+  Row,
+  CardText,
+} from "reactstrap";
 
-const DivContainerOne = styled.div`
-  margin-top: 40px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-`;
+function Giphy() {
+  const [gifs, setGifs] = useState([]);
+  const [inputGif, setinputGif] = useState(null);
+  const [Title, setpageTitle] = useState("Trending Gif");
+  const [endpoint, setendpoint] = useState("trending");
 
-const Input = styled.input`
-  width: 200px;
-  height: 30px;
-  border-radius: 3px;
-  border: 1px solid black;
-`;
-
-const CardList = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-`;
-const Card = styled.div`
-  padding: 10px;
-  width: 200px;
-  & img {
-    width: 100%;
-  }
-`;
-
-export default function Github() {
-  const [search, setSearch] = useState("");
-  const [datas, setDatas] = useState([]);
-
-  function handleChange(event) {
-    setSearch(event.target.value);
-  }
-  //   console.log(username);
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-  }
-  const fetchData = async () => {
-    const url =
-      "https://api.giphy.com/v1/gifs/trending?api_key=lKKQitcUCTnMwFVa12ti0ab1CTDRRBBk&limit=10&rating=g";
+  const fetchGif = async () => {
+    const url = `https://api.giphy.com/v1/gifs/${endpoint}?api_key=q3FWyDsuZuGA2v8zEox8Vkt9onNIRHqk&q=${inputGif}&limit=20&rating=g`;
     const response = await fetch(url);
-    const result = await response.json();
+    const results = await response.json();
 
-    const results = result.data;
-
-    setDatas(results);
+    setGifs(results.data);
   };
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchGif();
+    // eslint-disable-next-line
+  }, [inputGif]);
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      let key = event.target.value;
+
+      setinputGif(key);
+      key = key.charAt(0).toUpperCase() + key.substr(1).toLowerCase();
+      setpageTitle(key);
+      setendpoint("search");
+    }
+  };
 
   return (
-    <div style={{ marginTop: "20px" }}>
-      <DivContainerOne>
-        <form onSubmit={handleSubmit}>
+    <Container className="md-3">
+      <h1 className="text-center">{Title}</h1>
+      <Row className="mb-4 mt-4 d-flex justify-content-center">
+        <Col className="col-6 ">
           <Input
-            id="search"
-            name="search"
-            placeholder="Search here .."
-            value={search}
-            onChange={handleChange}
+            type="text"
+            name="keyword"
+            id="keyword"
+            placeholder="search here..."
+            onKeyPress={handleKeyPress}
           />
-        </form>
-      </DivContainerOne>
-      <CardList>
-        {datas.map((item) => {
-          return (
-            <Card key={item.id}>
-              <img src={item.images.original.url} alt="avatar" />
-            </Card>
-          );
-        })}
-      </CardList>
-    </div>
+        </Col>
+      </Row>
+      <Row className="d-flex justify-content-center">
+        {gifs !== undefined &&
+          gifs.map((element) => {
+            return (
+              <Card
+                className="card"
+                inverse
+                style={{
+                  width: "300px",
+                  margin: "0.5em",
+                  textAlign: "center",
+                }}
+                key={element.id}
+              >
+                <div className="card-header text-dark font-weight-bold">
+                  {element.title}
+                </div>
+                <img
+                  style={{ margin: "1em" }}
+                  src={element.images.fixed_height.url}
+                  alt="gif"
+                />
+              </Card>
+            );
+          })}
+      </Row>
+    </Container>
   );
 }
+
+export default Giphy;
